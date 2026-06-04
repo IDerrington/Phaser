@@ -11,7 +11,6 @@ import os
 from pathlib import Path
 from adi.cn0566 import CN0566
 
-
 def get_filter_path(filter_name="LTE20_MHz.ftr"):
     """
     Get the full path to an LTE filter file.

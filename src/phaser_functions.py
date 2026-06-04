@@ -606,6 +606,7 @@ def load_hb100_cal(filename="hb100_freq_val.pkl"):
             freq = pickle.load(file1)  # Load gain cal values
     except Exception:
         print("file not found, loading default 10.5GHz")
+        freq = 10.5e9  # Default frequency
     return freq
 
 
@@ -666,30 +667,38 @@ from adi.cn0566 import CN0566
 import config_custom as config
 import sys
 
+def get_phaser_root():
+    """
+    Finds the project root by looking for characteristic folder structure.
+    The project root should contain both 'resources' and 'src' folders.
+    Works regardless of the top-level folder name.
+    """
+    try:
+        # .py script
+        current_path = Path(__file__).resolve()
+    except NameError:
+        # Jupyter notebook
+        current_path = Path().resolve()
+
+    # Walk up the directory tree looking for project root
+    # Project root should have both 'resources' and 'src' folders
+    for parent in [current_path] + list(current_path.parents):
+        has_resources = (parent / "resources").exists() and (parent / "resources").is_dir()
+        has_src = (parent / "src").exists() and (parent / "src").is_dir()
+        
+        if has_resources and has_src:
+            return parent.resolve()
+
+    raise RuntimeError(
+        f"Could not locate project root (with both 'resources' and 'src' folders) from path: {current_path}\n"
+        "Make sure you're running from within the project hierarchy."
+    )
+
 def set_up_phaser():
     """ Set up the Phaser system. """
     # Initialize the Phaser system here
     # This function can be expanded to include additional setup steps if needed
  
-    def get_phaser_root():
-        try:
-            # .py script
-            current_path = Path(__file__).resolve()
-        except NameError:
-            # Jupyter notebook
-            current_path = Path().resolve()
-
-        for parent in [current_path] + list(current_path.parents):
-            if parent.name.lower() == "phaser":
-                return parent.resolve()
-
-        raise RuntimeError(
-            f"Could not locate 'phaser' folder from path: {current_path}\n"
-            "Make sure you're running from within the 'phaser' project hierarchy."
-            "If running in VSCode attach to .venv and not ipykernal."
-        )
-
-    # Use it
     phaser_root = get_phaser_root()
     resource_path = phaser_root / "resources"
 
