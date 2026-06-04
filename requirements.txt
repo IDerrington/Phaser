@@ -26,6 +26,10 @@ pyadi-iio==0.0.20
 # Git integration (for repo operations)
 GitPython==3.1.44
 
+# Jupyter notebook Git integration (strip outputs, better diffs)
+nbstripout==0.8.1
+nbdime==4.0.2
+
 # Animation & Visualization (for radar-for-young-engineers notebook)
 manim==0.19.1
 # Optional: if using manim, may need ffmpeg installed separately (system dependency)

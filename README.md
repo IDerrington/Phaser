@@ -67,11 +67,16 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
+# Configure git for Jupyter notebooks (strips outputs on commit)
+nbstripout --install
+
 # Enable Jupyter Lab extensions (for interactive widgets)
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 ```
 
-**Important:** The notebooks use `%matplotlib widget` for interactive plots, which requires the `ipympl` package (already in requirements.txt). You may need to restart your Jupyter server after installation.
+**Important:** 
+- The notebooks use `%matplotlib widget` for interactive plots, which requires the `ipympl` package (already in requirements.txt). You may need to restart your Jupyter server after installation.
+- The `nbstripout --install` command configures git to automatically remove notebook outputs and metadata when committing, keeping the repository clean and preventing merge conflicts.
 
 ### 3. Launch Jupyter
 
@@ -173,6 +178,7 @@ Core packages (see [requirements.txt](requirements.txt)):
 - `ipywidgets`, `ipympl` - Interactive Jupyter widgets
 - `pyadi-iio` - ADI hardware control library
 - `libiio` - IIO communication layer
+- `nbstripout`, `nbdime` - Git integration for notebooks (automatic output stripping, better diffs)
 
 ---
 
@@ -227,6 +233,19 @@ Large media files (videos, animations) require Git LFS:
 ```bash
 git lfs install
 git lfs pull
+```
+
+### Viewing Notebook Diffs
+To see rich visual diffs of notebooks (instead of raw JSON), use `nbdime`:
+```bash
+# View diff of a notebook
+nbdiff notebook.ipynb
+
+# View diff in a web browser
+nbdiff-web notebook.ipynb
+
+# Configure git to use nbdime for all notebook diffs
+nbdime config-git --enable --global
 ```
 
 ---
