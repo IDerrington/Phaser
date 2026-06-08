@@ -1,0 +1,38 @@
+# Core Scientific Computing
+numpy==2.2.4
+scipy==1.15.2
+matplotlib==3.10.1
+matplotlib-inline==0.1.7
+pandas==2.2.3
+
+
+# Jupyter & IPython (for notebook execution)
+jupyter==1.1.1
+ipykernel==6.29.5
+ipywidgets==8.1.5
+ipympl==0.9.7  # Interactive matplotlib backend for %matplotlib widget
+ipython==9.0.2
+
+# ADI Hardware Interface (Phaser/CN0566)
+# Note: pyadi-iio is the main package for interfacing with Analog Devices hardware
+# Version pinned to latest available on PyPI (0.0.21)
+# For newer versions or development, install from GitHub:
+# pip install git+https://github.com/analogdevicesinc/pyadi-iio.git
+pylibiio
+pyadi-iio==0.0.20
+# libiio is a dependency but may need to be installed separately depending on OS
+# For Windows: libiio can often be installed via conda or built from source
+
+# Git integration (for repo operations)
+GitPython==3.1.44
+
+# Jupyter notebook Git integration (strip outputs, better diffs)
+nbstripout==0.8.1
+nbdime==4.0.2
+
+# Animation & Visualization (for radar-for-young-engineers notebook)
+manim==0.19.1
+# Optional: if using manim, may need ffmpeg installed separately (system dependency)
+
+# Additional utilities
+# (standard library items like warnings, logging, time, sys, os are built-in)
