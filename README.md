@@ -193,19 +193,6 @@ jupyter labextension install @jupyter-widgets/jupyterlab-manager
 # Restart Jupyter server
 ```
 
-### `FileNotFoundError: LTE20_MHz.ftr`
-The LTE filter files are in `resources/` directory. Use the helper module instead of `SDR_init()`:
-
-```python
-import sys
-sys.path.insert(0, '../src')
-from phaser_init import init_phaser_sdr
-
-# Replace: my_phaser.SDR_init(freq_sample, 1e9, freq_sdr, 6, -6, 1024)
-# With:
-init_phaser_sdr(my_phaser, freq_sample, freq_sdr, rx_gain=-6, buffer_size=1024)
-```
-
 See [FILTER_FIX.md](FILTER_FIX.md) for detailed solutions.
 
 ### `ModuleNotFoundError: No module named 'phaser_functions'`
@@ -218,8 +205,6 @@ sys.path.insert(0, '../src')
 
 See [IMPORT_FIX.md](IMPORT_FIX.md) for detailed solutions and list of affected notebooks.
 
-### Missing Images/Logo
-The ADI logo should be in `resources/ADI-Logo-RGB-FullColor.png` at the repository root. If missing, download from [Analog Devices Press Kit](https://www.analog.com/en/about-adi/news-room/press-kits.html).
 
 ### Hardware Not Detected
 Check `pyadi-iio` and `libiio` installation:
@@ -266,9 +251,6 @@ Field Applications & Platform Engineer, ADEF Group
 Analog Devices, Inc.  
 Email: Iain.Derrington@analog.com  
 LinkedIn: https://www.linkedin.com/in/iderrington
-
-**Jan Hansford**  
-Email: Jan.Hansford@analog.com
 
 ---
 
