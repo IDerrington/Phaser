@@ -695,9 +695,10 @@ def get_phaser_root():
     )
 
 def set_up_phaser():
-    """ Set up the Phaser system. """
-    # Initialize the Phaser system here
-    # This function can be expanded to include additional setup steps if needed
+    """ 
+    Set up the Phaser system for Beam forming examples 
+    """
+
  
     phaser_root = get_phaser_root()
     resource_path = phaser_root / "resources"
@@ -721,22 +722,28 @@ def set_up_phaser():
 
     my_phaser.sdr = my_sdr  # Set my_phaser.sdr
 
-    """
-     Initialise Pluto
-    """
     from phaser_init import init_phaser_sdr
 
-    print(f"Initialise Pluto")
-    # By default device_mode is "rx"
+    print(f"Initialise Custom RF Board")
+    print("---------------------------\n")
+     # By default device_mode is "rx"
     my_phaser.configure(device_mode="rx")
-    init_phaser_sdr(my_phaser, 30000000, config.rx_freq, rx_gain=6, tx_gain=-6, buffer_size=1024)
 
-    print(f"Converter Sample Rate = {30000000/1e6} Msps")
-    print(f"SDR Tx frequency = {config.tx_freq/1e9} GHz (Not used)")
-    print(f"SDR Rx frequency = {config.rx_freq/1e9} GHz (Pluto Rx LO)")
-    print(f"Tx Gain = -6")
-    print(f"Rx Gain =  6")
-    print(f"Buffer size = 1024 bytes \n")
+    print(f"Initialise Pluto")
+    print("-----------------\n")   
+
+    init_phaser_sdr(my_phaser, 30000000, config.rx_freq, rx_gain=6, tx_gain=-88, buffer_size=1024)
+
+    # Push Tx LO away from Rx LO to avoid self-interference. This is not used in the CN0566, but is required for Pluto to work.
+    my_sdr.tx_lo = int(1.0e9)
+
+
+    print(f"Converter Sample Rate = {my_sdr.sample_rate/1e6} Msps")
+    print(f"SDR Tx frequency = {my_sdr.tx_lo/1e9} GHz (Not used)")
+    print(f"SDR Rx frequency = {my_sdr.rx_lo/1e9} GHz (Pluto Rx LO)")
+    print(f"Tx Gain Ch0 = {my_sdr.tx_hardwaregain_chan0} dB, Ch1 = {my_sdr.tx_hardwaregain_chan1} dB")
+    print(f"Rx Gain Ch0 = {my_sdr.rx_hardwaregain_chan0} dB, Ch1 = {my_sdr.rx_hardwaregain_chan1} dB")
+    print(f"Buffer size = {my_sdr.rx_buffer_size} samples \n")
 
     # Load the gain calibration for pluto. Corrects for Rx 0 / 1 differences
     my_phaser.load_channel_cal(filename=resource_path / "channel_cal_val.pkl")
@@ -746,8 +753,8 @@ def set_up_phaser():
     my_phaser.sdr.rx_hardwaregain_chan0 = (my_phaser.sdr.rx_hardwaregain_chan0 + my_phaser.ccal[0])
     my_phaser.sdr.rx_hardwaregain_chan1 = (my_phaser.sdr.rx_hardwaregain_chan1 + my_phaser.ccal[1])
 
-    print(f"Rx Chan 0 Cal = {my_phaser.ccal[0]}")
-    print(f"Rx Chan 1 Cal = {my_phaser.ccal[1]}")
+    print(f"Rx Chan 0 Cal = {my_phaser.ccal[0]:.2f} dB")
+    print(f"Rx Chan 1 Cal = {my_phaser.ccal[1]:.2f} dB")
 
     """
     Set up receive frequency. When using HB100, you need to know its frequency
@@ -763,27 +770,20 @@ def set_up_phaser():
         print(f"No signal freq found, keeping at {my_phaser.signalFreq} ")
 
 
-    #  Configure SDR parameters.
-    # Filter already set by init_phaser_sdr
-    # my_sdr.filter = resource_path / "LTE20_MHz.ftr"  # Load LTE 20 MHz filter
-
-    # To disable tx, set attenuation to a high value and set frequency far from rx.
-    my_sdr.tx_hardwaregain_chan0 = int(-88)  # this is a negative number between 0 and -88
-    my_sdr.tx_hardwaregain_chan1 = int(-88)
-    my_sdr.tx_lo = int(1.0e9)
-
-
     """
     Configure PLL
     """
+    print(f"Initialise PLL")
+    print("-----------------\n")  
+
     my_phaser.frequency = (int(my_phaser.signalFreq) + config.rx_freq ) // 4  # PLL feedback via /4 VCO output
-    my_phaser.freq_dev_step = 5690
+    my_phaser.freq_dev_step = 0
     my_phaser.freq_dev_range = 0
     my_phaser.freq_dev_time = 0
     my_phaser.powerdown = 0
     my_phaser.ramp_mode = "disabled"
 
-    print(f"PLL fixed frequency = {my_phaser.frequency}/1e9 GHz")
+    print(f"PLL fixed frequency = {my_phaser.frequency/1e9:.3f} GHz \n")
 
     """
     If you want to use previously calibrated values load_gain and load_phase values by passing path of previously
@@ -794,8 +794,8 @@ def set_up_phaser():
     my_phaser.load_gain_cal(filename= resource_path / "gain_cal_val.pkl")
     my_phaser.load_phase_cal(filename= resource_path / "phase_cal_val.pkl")
 
-    print(f"Gain Cal = {my_phaser.gcal}")
-    print(f"Phase Cal = {my_phaser.pcal}")
+    print(f"Gain Cal = {[f'{g:.2f}' for g in my_phaser.gcal]}")
+    print(f"Phase Cal = {[f'{p:.2f}' for p in my_phaser.pcal]}")
 
     """
      To set gain of all channels with different values.
